@@ -144,7 +144,7 @@ class DBHelper {
       print("len=" + len.toString());
       if (maps.length > 0) {
         for (int i = 0; i < len; i++) {
-          list_movies.add(MinorDetails.fromJson(maps[i]));
+          list_movies.add(MinorDetails.fromDBJson(maps[i]));
         }
       }
       return list_movies;

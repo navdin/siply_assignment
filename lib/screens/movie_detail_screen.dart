@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/models/MinorDetails.dart';
+import 'package:movie_app/screens/riverpod_test_screen.dart';
 
 import '../api.dart';
 import '../constants.dart';
@@ -17,7 +18,20 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     return Scaffold(
         backgroundColor: backThemeColor,
         appBar: AppBar(
-          title: Text("Movie Details"),
+          title: GestureDetector(
+              onDoubleTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return RiverpodTestScreen(
+                        movieDetails: widget.movieDetails,
+                      );
+                    },
+                  ),
+                );
+              },
+              child: Text("Movie Details")),
           backgroundColor: backThemeColor,
         ),
         body: ListView(

@@ -46,27 +46,33 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
         listNowMovies = await Network().getNowPlaying(1);
       }
     }
-    return Wrap(
-        spacing: 0,
-        alignment: WrapAlignment.center,
-        children: listNowMovies.map((e) {
-          return GestureDetector(
-            child: MovieCard(
-              movie: e,
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return MovieDetailScreen(
-                      movieDetails: e,
-                    );
-                  },
-                ),
-              );
-            },
-          );
-        }).toList());
+    double width = MediaQuery.of(context).size.width / 2;
+    double height = width * 1.7;
+    return SingleChildScrollView(
+      child: Wrap(
+          spacing: 0,
+          alignment: WrapAlignment.center,
+          children: listNowMovies.map((e) {
+            return GestureDetector(
+              child: MovieCard(
+                movie: e,
+                height: height,
+                width: width,
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return MovieDetailScreen(
+                        movieDetails: e,
+                      );
+                    },
+                  ),
+                );
+              },
+            );
+          }).toList()),
+    );
   }
 }

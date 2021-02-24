@@ -8,14 +8,16 @@ import 'package:movie_app/models/MinorDetails.dart';
 import '../api.dart';
 
 class MovieCard extends StatelessWidget {
-  MovieCard({this.movie});
+  MovieCard({this.movie, this.width, this.height});
   MinorDetails movie;
+  double height;
+  double width;
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(2),
-      width: 150,
-      height: 260,
+      width: width, //150,
+      height: height, // 260,
       color: Color.fromRGBO(13, 37, 63, 1),
       child: Column(
         children: [
