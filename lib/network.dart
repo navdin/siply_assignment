@@ -67,31 +67,47 @@ class Network {
   }
 
   Future<dynamic> getNowPlaying(int pageNo) async {
-    Map mapNowPlaying = {
-      "method": "GET",
-      "suffix": ApiEndPoints.getNowPlaying + pageNo.toString(),
-      "contentTypeHeader": "application/json",
-      "timeout": 50,
-    };
-    Response res = await serverCall(mapNowPlaying).catchError((error) {
-      return Future.error(error.toString());
-    });
-    List<MinorDetails> listNowPlaying = [];
-    int i = 0;
-    for (Map e in res.data["results"]) {
-      if (i == 6) {
-        break;
+    try {
+      Map mapNowPlaying = {
+        "method": "GET",
+        "suffix": ApiEndPoints.getNowPlaying + pageNo.toString(),
+        "contentTypeHeader": "application/json",
+        "timeout": 50,
+      };
+      Response res = await serverCall(mapNowPlaying).catchError((error) {
+        return Future.error(error.toString());
+      });
+      List<MinorDetails> listNowPlaying = [];
+      int i = 0;
+      for (Map e in res.data["results"]) {
+        // if (i == 6) {
+        //   break;
+        // }
+        i++;
+        print("i= " + i.toString());
+        try {
+          MinorDetails detail;
+          try {
+            detail = MinorDetails.fromJson(e);
+          } catch (e) {
+            print(e.toString());
+          }
+          detail = await getMovieDetails(detail.id, detail);
+          DBHelper dbHelper = DBHelper();
+          await dbHelper.saveMovie(detail);
+          // await getImage(detail.poster_path, "poster", detail);
+          listNowPlaying.add(detail);
+        } catch (e) {
+          print(e.toString());
+        }
       }
-      i++;
-      MinorDetails detail = MinorDetails.fromJson(e);
-      detail = await getMovieDetails(detail.id, detail);
-      DBHelper dbHelper = DBHelper();
-      await dbHelper.saveMovie(detail);
-      // await getImage(detail.poster_path, "poster", detail);
-      listNowPlaying.add(detail);
-    }
 
-    return listNowPlaying;
+      print("listNowPlaying.length=" + listNowPlaying.length.toString());
+      return listNowPlaying;
+    } catch (e) {
+      print("error below=");
+      print(e.toString());
+    }
   }
 
   Future<dynamic> getMovieDetails(
@@ -106,31 +122,34 @@ class Network {
             AppStrings.api_key +
             '&language=en-US',
         "contentTypeHeader": "application/json",
-        "timeout": 10,
+        "timeout": 50,
       };
       Response res = await serverCall(getDetails).catchError((error) {
         return Future.error(error.toString());
       });
       List<String> genres = [];
       List<String> spoken_languages = [];
+      try {
+        MinorDetails movieDetails = MinorDetails.fromJson(res.data);
 
-      MinorDetails movieDetails = MinorDetails.fromJson(res.data);
+        movieDetails.id = movieDetailsMain.id;
+        List mapGenres = res.data["genres"];
+        for (Map map in mapGenres) {
+          genres.add(map["name"]);
+        }
+        List mapSpoken = res.data["spoken_languages"];
+        for (Map map in mapSpoken) {
+          spoken_languages.add(map["english_name"]);
+        }
 
-      movieDetails.id = movieDetailsMain.id;
-      List mapGenres = res.data["genres"];
-      for (Map map in mapGenres) {
-        genres.add(map["name"]);
+        movieDetails.genres = genres.join(", ");
+        movieDetails.spoken_languages = spoken_languages.join(", ");
+        movieDetailsMain = movieDetails;
+        // await getImage(movieDetails.backdrop_path, "backdrop", movieDetails);
+      } catch (e) {
+        print("getMovieDetails=error");
+        print(e.toString());
       }
-      List mapSpoken = res.data["spoken_languages"];
-      for (Map map in mapSpoken) {
-        spoken_languages.add(map["english_name"]);
-      }
-
-      movieDetails.genres = genres.join(", ");
-      movieDetails.spoken_languages = spoken_languages.join(", ");
-      movieDetailsMain = movieDetails;
-      // await getImage(movieDetails.backdrop_path, "backdrop", movieDetails);
-
     } catch (ex) {
       print("ex" + ex);
     }

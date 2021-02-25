@@ -56,7 +56,7 @@ class MinorDetails {
       // spoken_languages: json['spoken_languages'],
       backdrop_localPath: json['backdrop_localPath'],
       poster_localPath: json['poster_localPath'],
-      vote_average: json['vote_average'],
+      vote_average: json['vote_average'] * 1.0,
     );
   }
 

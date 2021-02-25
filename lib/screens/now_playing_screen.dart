@@ -44,6 +44,7 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
       listNowMovies = await dbHelper.getAllMovies();
       if (listNowMovies == null || listNowMovies.length == 0) {
         listNowMovies = await Network().getNowPlaying(1);
+        print("listNowMovies.length");
       }
     }
     double width = MediaQuery.of(context).size.width / 2;
